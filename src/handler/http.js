@@ -26,7 +26,7 @@ dayjs.extend(isBetween)
 
 const tokenChecker = async (callerConfig, apiConfig, sessionConfig) => {
   const timeForCheckToken = dayjs() // tokenChecker 時間點
-  const { authKeyName, clientId, defaultBaseUrl, refreshSetting, renewalPeriod } = callerConfig
+  const { authKeyName, clientId, defaultBaseUrl, callerRefreshSetting, renewalPeriod } = callerConfig
   const { tokenType } = apiConfig
   const { systemAuth, userAuth } = sessionConfig
 
@@ -59,7 +59,7 @@ const tokenChecker = async (callerConfig, apiConfig, sessionConfig) => {
 
   const refreshSystemToken = async () => {
     const timeForRefreshSystemToken = dayjs().format() // refreshSystemToken 時間點
-    const { refreshBaseUrl, systemUrl } = refreshSetting
+    const { refreshBaseUrl, systemUrl } = callerRefreshSetting
     const { data: systemRefreshData } = await request({
       baseURL: refreshBaseUrl || defaultBaseUrl,
       method: 'POST',
@@ -75,7 +75,7 @@ const tokenChecker = async (callerConfig, apiConfig, sessionConfig) => {
   }
   const refreshUserToken = async () => {
     const timeForRefreshUserToken = dayjs().format() // refreshUserToken 時間點
-    const { refreshBaseUrl, userUrl } = refreshSetting
+    const { refreshBaseUrl, userUrl } = callerRefreshSetting
     const { data: userRefreshData } = await request({
       baseURL: refreshBaseUrl || defaultBaseUrl,
       method: 'POST',
@@ -155,7 +155,7 @@ const tokenChecker = async (callerConfig, apiConfig, sessionConfig) => {
 /**
  * 執行請求預處理及後續響應
  * @param {Object} callerConfig - caller設定檔
- * callTokenChecker, authKeyName, defaultBaseUrl, clientId ,refreshSetting, renewalPeriod
+ * callTokenChecker, authKeyName, defaultBaseUrl, clientId ,callerRefreshSetting, renewalPeriod
  *
  * @param {Object} apiConfig - api設定檔
  * url, data, params, tokenType, headers, method, timeout, baseURL

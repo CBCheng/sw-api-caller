@@ -1,10 +1,10 @@
+import dayjs from 'dayjs'
 import injectRequest from './handler/http'
 import SessionController from './plugins/sessionController'
-import dayjs from 'dayjs'
 class apiCaller {
   /**
    * @param {Object} callerConfig - caller設定檔
-   * authKeyName, defaultBaseUrl, clientId ,refreshSetting, renewalPeriod
+   * authKeyName, defaultBaseUrl, clientId ,callerRefreshSetting, renewalPeriod
    */
   constructor(callerConfig) {
     const { authKeyName, renewalPeriod = 1800 } = callerConfig
