@@ -9,7 +9,7 @@ module.exports = {
   },
   extends: ['eslint:recommended'],
   plugins: ['import'],
-  ignorePatterns: ['index.html'],
+  ignorePatterns: ['index.html', 'dist/*'],
   globals: {
     defineProps: 'readonly',
     defineEmits: 'readonly',
