@@ -26,7 +26,7 @@ dayjs.extend(isBetween)
 
 const tokenChecker = async (callerConfig, apiConfig, sessionConfig) => {
   const timeForCheckToken = dayjs() // tokenChecker 時間點
-  const { authKeyName, clientId, defaultBaseUrl, callerRefreshSetting, renewalPeriod } = callerConfig
+  const { authKeyName, defaultBaseUrl, defaultHeaders, clientId, callerRefreshSetting, renewalPeriod } = callerConfig
   const { tokenType } = apiConfig
   const { systemAuth, userAuth } = sessionConfig
 
@@ -51,7 +51,7 @@ const tokenChecker = async (callerConfig, apiConfig, sessionConfig) => {
     if (type === 'user') auth.set('userRefreshToken', config.refresh_token)
   }
 
-  const refreshHeader = {
+  const refreshHeaders = {
     'Content-Type': 'application/json',
     'Accept-Language': 'zh-TW',
     'Cache-Control': 'no-store, max-age=0',
@@ -65,7 +65,8 @@ const tokenChecker = async (callerConfig, apiConfig, sessionConfig) => {
       method: 'POST',
       url: systemUrl,
       headers: {
-        ...refreshHeader,
+        ...defaultHeaders,
+        ...refreshHeaders,
         Client_Id: clientId,
         'X-Origin-Time': timeForRefreshSystemToken,
       },
@@ -82,7 +83,8 @@ const tokenChecker = async (callerConfig, apiConfig, sessionConfig) => {
       url: userUrl,
       tokenType: 'user',
       headers: {
-        ...refreshHeader,
+        ...defaultHeaders,
+        ...refreshHeaders,
         Access_Token: userToken,
         Authorization: `Bearer ${userToken}`,
         Refresh_Token: userRefreshToken,
@@ -155,7 +157,7 @@ const tokenChecker = async (callerConfig, apiConfig, sessionConfig) => {
 /**
  * 執行請求預處理及後續響應
  * @param {Object} callerConfig - caller設定檔
- * callTokenChecker, authKeyName, defaultBaseUrl, clientId ,callerRefreshSetting, renewalPeriod
+ * callTokenChecker, authKeyName, defaultBaseUrl, defaultHeaders, clientId ,callerRefreshSetting, renewalPeriod
  *
  * @param {Object} apiConfig - api設定檔
  * url, data, params, tokenType, headers, method, timeout, baseURL
@@ -168,7 +170,7 @@ const tokenChecker = async (callerConfig, apiConfig, sessionConfig) => {
 const injectRequest = async (callerConfig, apiConfig, sessionConfig) => {
   const requestTimestamp = dayjs().format() // 發送時間點
   try {
-    const { callTokenChecker = true, defaultBaseUrl, clientId } = callerConfig
+    const { callTokenChecker = true, defaultBaseUrl, defaultHeaders, clientId } = callerConfig
     const { url, data, params, tokenType, headers, method, timeout = 15000, baseURL } = apiConfig
 
     if (callTokenChecker) await tokenChecker(callerConfig, apiConfig, sessionConfig)
@@ -182,6 +184,7 @@ const injectRequest = async (callerConfig, apiConfig, sessionConfig) => {
         'Content-Type': 'application/json',
         'Accept-Language': 'zh-TW',
         'Cache-Control': 'no-store, max-age=0',
+        ...defaultHeaders,
         ...headers,
       },
       timeout,
